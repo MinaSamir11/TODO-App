@@ -32,8 +32,7 @@ export const SignUpAuth = (Account) => {
             Status: Request.response.status,
           }),
         );
-      }
-      if (Request.status == 201) {
+      } else if (Request.status == 201) {
         let RequestToken = await Api.post(
           ApiConstant.TokenCreate,
           formDataAccount,
@@ -53,10 +52,10 @@ export const SignUpAuth = (Account) => {
             ...RequestToken.data,
           });
         } else {
-          console.log('Ress', RequestToken.response.status);
+          console.log('Ress', RequestToken.status);
           dispatch(
             setUser({
-              Status: RequestToken.response.status,
+              Status: RequestToken.status,
             }),
           );
         }
@@ -78,7 +77,7 @@ const storeData = async (value) => {
 const getData = async () => {
   try {
     const jsonValue = await AsyncStorage.getItem('com.dailymealz.userInfo');
-    console.log('Async storage', jsonValue);
+    console.log('Async storage', JSON.parse(jsonValue));
     return jsonValue != null ? JSON.parse(jsonValue) : null;
   } catch (e) {
     // error reading value
@@ -107,9 +106,7 @@ export const SignInAuth = (Account) => {
             Status: RequestToken.response.status,
           }),
         );
-      }
-
-      if (RequestToken.status == 200) {
+      } else if (RequestToken.status == 200) {
         dispatch(
           setUser({
             ...RequestToken.data,
@@ -119,14 +116,14 @@ export const SignInAuth = (Account) => {
         );
         //store in asyncstorage
         storeData({
-          ...Account.username,
+          userName: Account.username,
           ...RequestToken.data,
         });
       } else {
-        console.log('Ress', RequestToken.response.status);
+        console.log('Ress', RequestToken.status);
         dispatch(
           setUser({
-            Status: RequestToken.response.status,
+            Status: RequestToken.status,
           }),
         );
       }

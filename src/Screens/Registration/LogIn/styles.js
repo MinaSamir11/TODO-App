@@ -5,7 +5,7 @@ import {Colors} from '../../../Assets';
 const styles = StyleSheet.create({
   MainContainer: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: Colors.GrayBackgroundColor,
   },
   LoginBtn: {borderRadius: 28.5, marginTop: 30, width: 325, height: 57},
   txtUserName: {

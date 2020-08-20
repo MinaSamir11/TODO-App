@@ -6,7 +6,7 @@ import Styles from './styles';
 
 import {Button, Input, LoadingModal, PopUp} from '../../../Components';
 
-import {Icons} from '../../../Assets';
+import {Icons, Colors} from '../../../Assets';
 
 import {validateUserName, validatePassword} from '../../../Utils/stringUtils';
 
@@ -44,9 +44,7 @@ const SignUp = (props) => {
     if (UserInfo.Status == 200) {
       IsLoadingModalVisible(false);
       dispatch(setUserProfile({...UserInfo, Status: 0}));
-      // props.navigation.dispatch(StackActions.replace('TabBottomNavigator'));
-      // RootNavigation.navigate('OnBoarding');
-      console.log('Created', UserInfo);
+      props.props.replace('BottomTabNavigator');
     } else if (UserInfo.Status == 50) {
       dispatch(setUserProfile({Status: 0}));
       IsLoadingModalVisible(false);
@@ -179,6 +177,7 @@ const SignUp = (props) => {
             onChangeText={(text) => OnChangePassword(text)}
             InputStyle={[Styles.InputStyle]}
             IconName={secureTextIcon}
+            IconLeftColor={Colors.RelativeMainColor}
             changeIcon={() => {
               setsecureText(!secureText);
               if (secureText) {

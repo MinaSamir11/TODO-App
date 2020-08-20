@@ -1,11 +1,13 @@
 export const Colors = {
   LightGrey: '#d7d7d7',
   White: '#fff',
-  LoginScreen: '#702a81',
+  RelativeMainColor: '#F0F3F6',
   Grey: '#3f3e3e',
   DarkGrey: '#656565',
   Black: '#000',
-  MainColor: '#00A76E',
+  MainColor: '#7727FF',
+  SecondMainColor: '#64BFE3',
+  SecondRelativeMainColor: '#262932',
   statusBarColor: '#621972',
   highlightGray: '#949393',
   borderGray: '#acacac',
@@ -19,4 +21,5 @@ export const Colors = {
   GreyWhite: '#8d8d8d',
   GreyBlack: '#3d3d3d',
   checkBoxBorderColor: '#d3d3d3',
+  GrayBackgroundColor: '#FAFAFA',
 };

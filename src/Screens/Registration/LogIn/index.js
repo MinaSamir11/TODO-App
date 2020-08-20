@@ -16,7 +16,7 @@ import * as Auth from '../../../Store/Actions/Auth';
 
 import * as RootNavigation from '../../../Navigation/RootNavigation';
 
-const LogIn = () => {
+const LogIn = (props) => {
   const dispatch = useDispatch();
   const UserInfo = useSelector((state) => state.Auth.UserInfo);
 
@@ -41,7 +41,7 @@ const LogIn = () => {
     if (UserInfo.Status == 200) {
       IsLoadingModalVisible(false);
       dispatch(setUserProfile({...UserInfo, Status: 0}));
-      console.log('Greadted done');
+      props.props.replace('BottomTabNavigator');
     } else if (UserInfo.Status == 50) {
       IsLoadingModalVisible(false);
       setMessagePopUp('No internet Connection');
@@ -180,13 +180,6 @@ const LogIn = () => {
             }}
           />
         </View>
-        <Button
-          title={'Forget Password?'}
-          numberOfLines={1}
-          Customstyle={Styles.ForgetPasswordBtn}
-          BtnTitleStyle={Styles.TitleBtn}
-          onPress={OnLogin}
-        />
 
         <Button
           title={'Login'}

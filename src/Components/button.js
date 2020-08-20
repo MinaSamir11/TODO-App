@@ -37,7 +37,9 @@ const Button = React.memo(
         style={[styles.buttonStyle, Customstyle]}
         activeOpacity={activeOpacity ? activeOpacity : 0.3}>
         {IconLeftName && (
-          <Icon color={IconColor} size={IconSize} name={IconLeftName} />
+          <View>
+            <Icon color={IconColor} size={IconSize} name={IconLeftName} />
+          </View>
         )}
         {IconsImage && <Image source={IconsImage} style={styles.IconImage} />}
         {title && (
@@ -79,7 +81,6 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.White,
       },
     }),
-    margin: 5,
   },
   buttonTextStyle: {
     textAlign: 'center',
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
         color: Colors.MainColor,
       },
       android: {
-        color: Colors.White,
+        color: Colors.RelativeMainColor,
       },
     }),
     fontSize: 18,

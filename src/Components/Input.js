@@ -24,6 +24,9 @@ const Input = React.memo(
     multiline,
     changeIcon,
     IconName,
+    IconLeftColor,
+    placeholderTextColor,
+    ContainerView,
   }) => {
     const [Value, OnTextChange] = useState('');
 
@@ -33,7 +36,7 @@ const Input = React.memo(
     };
 
     return (
-      <View style={styles.Container}>
+      <View style={[styles.Container, ContainerView]}>
         <TextInput
           multiline={multiline ? multiline : false}
           secureTextEntry={secureTextEntry ? secureTextEntry : false}
@@ -41,14 +44,16 @@ const Input = React.memo(
           placeholderStyle={{fontSize: 30}}
           editable={editable && editable}
           placeholder={PlaceHolder}
-          placeholderTextColor={'#000'}
+          placeholderTextColor={
+            placeholderTextColor ? placeholderTextColor : '#000'
+          }
           maxLength={maxLength ? maxLength : 150}
           value={Value}
           onChangeText={textChangeHandler}
         />
         {IconName && (
           <TouchableOpacity style={styles.iconContainer} onPress={changeIcon}>
-            <Icon size={25} color={'red'} name={IconName} />
+            <Icon size={25} color={IconLeftColor} name={IconName} />
           </TouchableOpacity>
         )}
         {Error && <Text style={styles.ErrorTxt}>{ErrorTitle}</Text>}
@@ -61,7 +66,7 @@ const styles = StyleSheet.create({
   Container: {
     alignContent: 'center',
     justifyContent: 'center',
-    marginTop: 10,
+    marginTop: 5,
   },
   textInput: {
     backgroundColor: '#f1f1f1',

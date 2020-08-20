@@ -15,15 +15,17 @@ import {Images} from '../../Assets';
 const SignIn = (props) => {
   let [selectedTab, setSelectedTab] = useState(1);
 
-  let [renderedComponent, setComponent] = useState(<LogIn />);
+  let [renderedComponent, setComponent] = useState(
+    <LogIn props={props.navigation} />,
+  );
 
   const changeTab = (index) => {
     if (index === 1) {
       setSelectedTab(index);
-      setComponent(<LogIn />);
+      setComponent(<LogIn props={props.navigation} />);
     } else {
       setSelectedTab(index);
-      setComponent(<SignUp />);
+      setComponent(<SignUp props={props.navigation} />);
     }
   };
 
