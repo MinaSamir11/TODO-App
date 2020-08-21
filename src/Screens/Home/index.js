@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 
-import {View, Text, ScrollView, FlatList} from 'react-native';
+import {View, Text, ScrollView, RefreshControl} from 'react-native';
 
 import Styles from './styles';
 
@@ -34,23 +34,26 @@ const Home = (props) => {
 
   const setToDoList = (ToDoStatus) => {
     return {
-      Status: ToDoStatus.Status,
-      type: 'SET_TODO_RESPONSE',
+      List: ToDoStatus,
+      type: 'GET_TODO',
     };
   };
 
   useEffect(() => {
-    if (StatusToDoResponse == 200) {
-      IsLoadingModalVisible(false);
-      dispatch(setToDoList({Status: 0}));
-    } else if (StatusToDoResponse == 408) {
-      IsLoadingModalVisible(false);
-      setMessagePopUp('No internet Connection');
-      dispatch(setToDoList({Status: 0}));
-      setVisiabiltyPopUp(true);
-    } else if (StatusToDoResponse == 401) {
-      IsLoadingModalVisible(false);
-      dispatch(setToDoList({Status: 0}));
+    if (StatusToDoResponse != null) {
+      if (StatusToDoResponse == 200) {
+        IsLoadingModalVisible(false);
+        console.log('Wrong', StatusToDoResponse);
+        dispatch(setToDoList({Status: null}));
+      } else if (StatusToDoResponse == 408) {
+        IsLoadingModalVisible(false);
+        setMessagePopUp('No internet Connection');
+        dispatch(setToDoList({Status: null}));
+        setVisiabiltyPopUp(true);
+      } else if (StatusToDoResponse == 401) {
+        IsLoadingModalVisible(false);
+        dispatch(setToDoList({Status: null}));
+      }
     }
   }, [StatusToDoResponse]);
 
@@ -66,10 +69,27 @@ const Home = (props) => {
     setVisiabiltyPopUp(() => false);
   }, [setVisiabiltyPopUp]);
 
-  const OnEdit = (id) => {
-    console.log('id', id);
+  const OnEdit = (Task) => {
+    props.navigation.push('AddTask', {
+      Task,
+    });
   };
 
+  const OnCompleteTask = (Task) => {
+    console.log('Task', Task);
+    dispatch(
+      TODOActions.Update_TODO(
+        {
+          completed: !Task['completed'],
+        },
+        Task,
+      ),
+    );
+  };
+
+  const OnDeleteTask = (Task) => {
+    dispatch(TODOActions.Delete_TODO(Task['id'], Task['created']));
+  };
   return (
     <View style={Styles.MainContainer}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -102,7 +122,7 @@ const Home = (props) => {
             onPress={() => {}}
           />
         </View>
-        {!TodayTODOlist.length > 0 && (
+        {!TodayTODOlist.length > 0 && !LoadingModalVisible && (
           <View style={{flex: 1}}>
             <EmptyState
               MessageTitle={'No Tasks TODO'}
@@ -112,13 +132,17 @@ const Home = (props) => {
           </View>
         )}
         <View style={{flex: 1}}>
-          <FlatList
-            data={TodayTODOlist}
-            keyExtractor={(item) => item['id'].toString()}
-            renderItem={({item, index}) => (
-              <Tasks Data={item} OnEdit={OnEdit} />
-            )}
-          />
+          <ScrollView>
+            {TodayTODOlist.map((item, index) => (
+              <Tasks
+                Data={item}
+                OnEdit={OnEdit}
+                OnCompleteTask={OnCompleteTask}
+                OnDeleteTask={OnDeleteTask}
+                key={index}
+              />
+            ))}
+          </ScrollView>
         </View>
       </View>
       <Button

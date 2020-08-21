@@ -12,7 +12,7 @@ const Task = (props) => {
     <View style={styles.MainContainer}>
       <View style={styles.TitleContainer}>
         <Text style={styles.titleTxt}>{props.Data['title']}</Text>
-        <TouchableOpacity onPress={() => props.OnEdit(props.Data['id'])}>
+        <TouchableOpacity onPress={() => props.OnEdit(props.Data)}>
           <Icon name={'pencil'} size={20} color={Colors.fontDark} />
         </TouchableOpacity>
       </View>
@@ -20,15 +20,23 @@ const Task = (props) => {
         <Text style={styles.ContentTxt}>{props.Data['content']}</Text>
       </View>
       <View style={styles.CompleteDeleteContainer}>
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => props.OnDeleteTask(props.Data)}>
           <Icon name={'delete'} size={20} color={'#540D47'} />
         </TouchableOpacity>
-        {props.Data['complete'] && <Text style={styles.DoneTxt}>Done</Text>}
-        <TouchableOpacity onPress={() => {}}>
+        {props.Data['completed'] && <Text style={styles.DoneTxt}>Done</Text>}
+        <TouchableOpacity onPress={() => props.OnCompleteTask(props.Data)}>
           <Icon
-            name={'checkbox-marked-circle-outline'}
+            name={
+              props.Data['completed']
+                ? 'checkbox-marked-circle'
+                : 'checkbox-marked-circle-outline'
+            }
             size={20}
-            color={Colors.SecondRelativeMainColor}
+            color={
+              props.Data['completed']
+                ? Colors.MainColor
+                : Colors.SecondRelativeMainColor
+            }
           />
         </TouchableOpacity>
       </View>

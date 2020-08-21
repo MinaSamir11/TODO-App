@@ -25,13 +25,13 @@ const Home = (props) => {
 
   const setToDoList = (ToDoStatus) => {
     return {
-      Status: ToDoStatus.Status,
-      type: 'SET_TODO_RESPONSE',
+      List: ToDoStatus,
+      type: 'SET_UPDATED_TODO',
     };
   };
 
-  const StatusToDoResponse = useSelector(
-    (state) => state.TODO.StatusToDoResponse,
+  const UpdatedToDoResponse = useSelector(
+    (state) => state.TODO.UpdatedToDoResponse,
   );
 
   let [LoadingModalVisible, IsLoadingModalVisible] = useState(false);
@@ -40,13 +40,21 @@ const Home = (props) => {
 
   let [MessagePopUp, setMessagePopUp] = useState('');
 
-  let [StartDate, setStartDate] = useState('');
+  let [StartDate, setStartDate] = useState(
+    props.route.params !== undefined ? props.route.params.Task['created'] : '',
+  );
 
-  let [EndDate, setEndDate] = useState('');
+  let [EndDate, setEndDate] = useState(
+    props.route.params !== undefined ? props.route.params.Task['due_date'] : '',
+  );
 
-  let [TaskName, setTaskName] = useState(null);
+  let [TaskName, setTaskName] = useState(
+    props.route.params !== undefined ? props.route.params.Task['title'] : null,
+  );
 
-  let [TaskContent, setTaskContent] = useState('');
+  let [TaskContent, setTaskContent] = useState(
+    props.route.params !== undefined ? props.route.params.Task['content'] : '',
+  );
 
   let [markedDate, setmarkedDate] = useState([]);
 
@@ -77,21 +85,25 @@ const Home = (props) => {
   }, [EndDate, StartDate]);
 
   useEffect(() => {
-    if (StatusToDoResponse != null) {
-      if (StatusToDoResponse == 201) {
+    if (UpdatedToDoResponse != null) {
+      if (UpdatedToDoResponse == 201) {
         IsLoadingModalVisible(false);
         setShowProcessModal(true);
-      } else if (StatusToDoResponse == 401) {
+      } else if (UpdatedToDoResponse == 200) {
+        IsLoadingModalVisible(false);
+        setMessagePopUp('Done');
+        setVisiabiltyPopUp(true);
+      } else if (UpdatedToDoResponse == 401) {
         IsLoadingModalVisible(false);
         setShowProcessModal(true);
-      } else if (StatusToDoResponse == 408) {
+      } else if (UpdatedToDoResponse == 408) {
         IsLoadingModalVisible(false);
         setShowProcessModal(true);
       } else {
         IsLoadingModalVisible(false);
       }
     }
-  }, [StatusToDoResponse]);
+  }, [UpdatedToDoResponse]);
 
   const InitMarkedDate = (date) => {
     if (date === StartDate) {
@@ -165,9 +177,17 @@ const Home = (props) => {
     }
   };
 
-  const PopupactionFunction = useCallback(() => {
+  const PopupactionFunction = () => {
     setVisiabiltyPopUp(() => false);
-  }, [setVisiabiltyPopUp]);
+    if (MessagePopUp == 'Done') {
+      props.navigation.goBack();
+      dispatch(
+        setToDoList({
+          Status: null,
+        }),
+      );
+    }
+  };
 
   const OnChangeTaskName = (text) => {
     setTaskName(text);
@@ -177,19 +197,47 @@ const Home = (props) => {
     setTaskContent(text);
   };
 
-  const OnAddTask = () => {
+  const CheckChangedData = () => {
+    if (props.route.params !== undefined) {
+      if (props.route.params.Task['title'] !== TaskName) return false;
+      else if (props.route.params.Task['content'] !== TaskContent) return false;
+      else if (props.route.params.Task['created'] !== StartDate) return false;
+      else if (props.route.params.Task['due_date'] !== EndDate) return false;
+      else {
+        return true;
+      }
+    }
+  };
+
+  const OnAddEditTask = () => {
     if (TaskName !== null && TaskName !== '') {
       if (StartDate !== '' && EndDate !== '') {
         IsLoadingModalVisible(true);
-        dispatch(
-          TODOActions.Create_TODO({
-            title: TaskName,
-            content: TaskContent,
-            created: StartDate,
-            completed: false,
-            due_date: EndDate,
-          }),
-        );
+        if (props.route.params === undefined) {
+          dispatch(
+            TODOActions.Create_TODO({
+              title: TaskName,
+              content: TaskContent,
+              created: StartDate,
+              completed: false,
+              due_date: EndDate,
+            }),
+          );
+        } else {
+          dispatch(
+            TODOActions.Update_TODO(
+              {
+                title: TaskName,
+                content: TaskContent,
+                created: StartDate,
+                due_date: EndDate,
+              },
+              {
+                ...props.route.params.Task,
+              },
+            ),
+          );
+        }
       } else {
         setMessagePopUp('Please Enter Date');
         setVisiabiltyPopUp(true);
@@ -221,6 +269,7 @@ const Home = (props) => {
   };
   const OnProcessModalFaild = () => {
     setClosedAnimation(true);
+    setShowProcessModal(false);
   };
 
   return (
@@ -287,15 +336,28 @@ const Home = (props) => {
 
         <View style={Styles.MainContainerAddTask}>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <Text style={Styles.AddTaskTxt}>ADD TASK DETAILS</Text>
+            <Text style={Styles.AddTaskTxt}>
+              {props.route.params === undefined ? 'ADD' : 'EDIT'} TASK DETAILS
+            </Text>
             <Button
-              title={'Add Task'}
-              Customstyle={Styles.AddTaskBtn}
+              disabled={
+                props.route.params === undefined ? false : CheckChangedData()
+              }
+              title={
+                props.route.params !== undefined ? 'Edit Task' : 'Add Task'
+              }
+              Customstyle={[
+                Styles.AddTaskBtn,
+                CheckChangedData()
+                  ? {backgroundColor: '#000'}
+                  : {backgroundColor: Colors.MainColor},
+              ]}
               BtnTitleStyle={Styles.TitleBtn}
-              onPress={OnAddTask}
+              onPress={OnAddEditTask}
             />
           </View>
           <Input
+            InputValue={TaskName}
             maxLength={250}
             Error={TaskName !== '' ? false : true}
             ErrorTitle={'Task name is required'}
@@ -306,6 +368,7 @@ const Home = (props) => {
             placeholderTextColor={Colors.LightGrey}
           />
           <Input
+            InputValue={TaskContent}
             maxLength={500}
             multiline
             PlaceHolder={'Enter Task Content'}
@@ -326,22 +389,22 @@ const Home = (props) => {
 
       <ProcessModal
         ClosedAnimation={ClosedAnimation}
-        TransactionStatus={StatusToDoResponse == 201 ? 'Success' : 'Failed '}
+        TransactionStatus={UpdatedToDoResponse == 201 ? 'Success' : 'Failed '}
         TransactionMessage={
-          StatusToDoResponse == 201
+          UpdatedToDoResponse == 201
             ? 'Task created successfully'
-            : StatusToDoResponse == 408
+            : UpdatedToDoResponse == 408
             ? 'no internet connection'
             : 'Oh no, somthing went wrong try Again later'
         }
         BtnTitle={
-          StatusToDoResponse == 201 ? 'Back To TODO Home!' : 'Try again, later'
+          UpdatedToDoResponse == 201 ? 'Back To TODO Home!' : 'Try again, later'
         }
         ShowTransaction={ShowProcessModal}
         OnDismiss={OnCloseTProcessModal}
-        ImageStatus={StatusToDoResponse == 201 ? Icons.Success : Icons.Failed}
+        ImageStatus={UpdatedToDoResponse == 201 ? Icons.Success : Icons.Failed}
         TakeAction={
-          StatusToDoResponse == 201
+          UpdatedToDoResponse == 201
             ? OnProcessModalSuccess
             : OnProcessModalFaild
         }

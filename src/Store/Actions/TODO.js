@@ -2,20 +2,19 @@ import * as types from './types';
 
 import ApiConstant, {Api} from '../../Utils/Api';
 
+import TODOModel from '../../Model/TODOModel';
 const setToDoList = (ToDo) => {
-  let TODOtemp = ToDo.TODOList ? ToDo : null;
+  return {
+    List: ToDo,
+    type: types.GET_TODO,
+  };
+};
 
-  if (TODOtemp !== null) {
-    return {
-      TODOList: TODOtemp,
-      type: types.GET_TODO,
-    };
-  } else {
-    return {
-      Status: ToDo.Status,
-      type: types.SET_TODO_RESPONSE,
-    };
-  }
+const setToDoUpdatedList = (ToDo) => {
+  return {
+    List: ToDo,
+    type: types.SET_UPDATED_TODO,
+  };
 };
 
 const check_TodaytaskDate = (date) => {
@@ -41,6 +40,15 @@ const Filter_TodayTasks = (List) => {
   }
   return temp;
 };
+
+const check_DateEquality = (dateArray) => {
+  return (
+    dateArray[0].substring(0, 4) === dateArray[1].substring(0, 4) &&
+    dateArray[0].substring(5, 7) === dateArray[1].substring(5, 7) &&
+    dateArray[0].substring(8, 10) === dateArray[1].substring(8, 10)
+  );
+};
+
 export const get_TODOlist = () => {
   return async (dispatch) => {
     //need header Authorization in first param , "Relative url" , ToDo data
@@ -66,24 +74,24 @@ export const get_TODOlist = () => {
 
         dispatch(
           setToDoList({
-            TODOList: TODOListRequest.data,
+            ToDoList: TODOListRequest.data,
             TodayTODOList: TodayTasks,
             Status: TODOListRequest.status,
           }),
         );
-      } else {
+      } else if (TODOListRequest.status == undefined) {
         console.log('Ress', TODOListRequest.status);
         dispatch(
           setToDoList({
-            Status: TODOListRequest.status,
+            Status: 408,
           }),
         );
       }
     } else {
-      console.log('Error Network ', TODOListRequest.response.status);
+      console.log('Error ', TODOListRequest.response.status);
       dispatch(
         setToDoList({
-          Status: 500,
+          Status: 408,
         }),
       );
     }
@@ -104,21 +112,22 @@ export const Create_TODO = (TODOTask) => {
         console.log(CreateTODORequest.response.status);
         console.log(CreateTODORequest.response.headers);
         dispatch(
-          setToDoList({
+          setToDoUpdatedList({
             Status: CreateTODORequest.response.status,
           }),
         );
       } else if (CreateTODORequest.status == 201) {
-        let TODOList = getState().TODO.ToDoList;
-        let TodayTasks = getState().TODO.TodayTODOList;
+        let ToDoList = [...getState().TODO.ToDoList];
+        let TodayTasks = [...getState().TODO.TodayTODOList];
+
         if (check_TodaytaskDate(CreateTODORequest.data['created'])) {
           TodayTasks.push(CreateTODORequest.data);
         }
-        TODOList.push(CreateTODORequest.data);
+        ToDoList.push(CreateTODORequest.data);
 
         dispatch(
-          setToDoList({
-            ...TODOList,
+          setToDoUpdatedList({
+            ...ToDoList,
             TodayTODOList: TodayTasks,
             Status: CreateTODORequest.status,
           }),
@@ -126,14 +135,167 @@ export const Create_TODO = (TODOTask) => {
       } else if (CreateTODORequest.status == undefined) {
         console.log('Ress', CreateTODORequest);
         dispatch(
-          setToDoList({
+          setToDoUpdatedList({
             Status: 408,
           }),
         );
       }
     } else {
       dispatch(
-        setToDoList({
+        setToDoUpdatedList({
+          Status: 408,
+        }),
+      );
+    }
+  };
+};
+
+export const Update_TODO = (newTODOTask, OldTODOTask) => {
+  return async (dispatch, getState) => {
+    let myJson = JSON.stringify(newTODOTask);
+    //need header Authorization in first param , "Relative url" , ToDo data
+    let UpdateTODORequest = await Api.patch(
+      true,
+      ApiConstant.Todo.concat(OldTODOTask['id'] + '/'),
+      myJson,
+    );
+
+    if (UpdateTODORequest) {
+      //error
+      if (UpdateTODORequest.response) {
+        // Request made and server responded
+        console.log(UpdateTODORequest.response.data);
+        console.log(UpdateTODORequest.response.status);
+        console.log(UpdateTODORequest.response.headers);
+        dispatch(
+          setToDoUpdatedList({
+            Status: UpdateTODORequest.response.status,
+          }),
+        );
+      } else if (UpdateTODORequest.status == 200) {
+        let ToDoList = [...getState().TODO.ToDoList];
+        let TodayTasks = [...getState().TODO.TodayTODOList];
+        if (
+          check_DateEquality([
+            OldTODOTask['created'],
+            UpdateTODORequest.data['created'],
+          ]) ||
+          OldTODOTask['completed'] !== UpdateTODORequest.data['completed']
+        ) {
+          // if user change conent only without date updated content in array Today
+
+          let objIndex = TodayTasks.findIndex(
+            (obj) => obj['id'] == OldTODOTask['id'],
+          );
+
+          TodayTasks[objIndex] = new TODOModel(UpdateTODORequest.data);
+          console.log('Edit Content');
+        } else if (
+          !check_TodaytaskDate(OldTODOTask['created']) &&
+          check_TodaytaskDate(UpdateTODORequest.data['created'])
+        ) {
+          // if user update date to today add this task in array today
+          TodayTasks.push(UpdateTODORequest.data);
+          console.log('Add new ');
+        } else if (
+          check_TodaytaskDate(OldTODOTask['created']) &&
+          !check_TodaytaskDate(UpdateTODORequest.data['created'])
+        ) {
+          // if user change today task to another day remove it from array today
+          let filtered = TodayTasks.filter(function (item, index, arr) {
+            return item['id'] !== UpdateTODORequest.data['id'];
+          });
+          TodayTasks = [...filtered];
+          console.log('filtered');
+        }
+        console.log('New last', UpdateTODORequest.status);
+        ToDoList.push(UpdateTODORequest.data);
+
+        if (OldTODOTask['completed'] !== UpdateTODORequest.data['completed']) {
+          dispatch(
+            setToDoList({
+              ...ToDoList,
+              TodayTODOList: TodayTasks,
+              Status: UpdateTODORequest.status,
+            }),
+          );
+        } else {
+          dispatch(
+            setToDoUpdatedList({
+              ...ToDoList,
+              TodayTODOList: TodayTasks,
+              Status: UpdateTODORequest.status,
+            }),
+          );
+        }
+      } else if (UpdateTODORequest.status == undefined) {
+        console.log('Time OUT', UpdateTODORequest);
+        dispatch(
+          setToDoUpdatedList({
+            Status: 408,
+          }),
+        );
+      }
+    } else {
+      dispatch(
+        setToDoUpdatedList({
+          Status: 408,
+        }),
+      );
+    }
+  };
+};
+
+export const Delete_TODO = (id, date) => {
+  return async (dispatch, getState) => {
+    //need header Authorization in first param , "Relative url"
+    let DeleteTODORequest = await Api.delete(
+      true,
+      ApiConstant.Todo.concat(id + '/'),
+    );
+
+    if (DeleteTODORequest) {
+      //error
+      if (DeleteTODORequest.response) {
+        // Request made and server responded
+        console.log(DeleteTODORequest.response.data);
+        console.log(DeleteTODORequest.response.status);
+        console.log(DeleteTODORequest.response.headers);
+        dispatch(
+          setToDoUpdatedList({
+            Status: DeleteTODORequest.response.status,
+          }),
+        );
+      } else if (DeleteTODORequest.status == 204) {
+        let ToDoList = [...getState().TODO.ToDoList];
+        let TodayTasks = [...getState().TODO.TodayTODOList];
+        if (check_TodaytaskDate(date)) {
+          // if user change today task to another day remove it from array today
+          let filtered = TodayTasks.filter(function (item, index, arr) {
+            return item['id'] !== id;
+          });
+          TodayTasks = [...filtered];
+          console.log('filtered');
+        }
+
+        dispatch(
+          setToDoList({
+            ...ToDoList,
+            TodayTODOList: TodayTasks,
+            Status: DeleteTODORequest.status,
+          }),
+        );
+      } else if (DeleteTODORequest.status == undefined) {
+        console.log('Time OUT', DeleteTODORequest);
+        dispatch(
+          setToDoUpdatedList({
+            Status: 408,
+          }),
+        );
+      }
+    } else {
+      dispatch(
+        setToDoUpdatedList({
           Status: 408,
         }),
       );

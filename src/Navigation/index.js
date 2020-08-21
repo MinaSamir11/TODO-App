@@ -8,7 +8,7 @@ import Registration from '../Screens/Registration';
 
 import Home from '../Screens/Home';
 
-import AddTask from '../Screens/AddTask';
+import AddEditTask from '../Screens/AddEditTask';
 
 import {createStackNavigator} from '@react-navigation/stack';
 
@@ -48,7 +48,7 @@ const TODOStack = () => {
   return (
     <Stack.Navigator headerMode="none">
       <Stack.Screen name="Home" component={Home} />
-      <Stack.Screen name="AddTask" component={AddTask} />
+      <Stack.Screen name="AddTask" component={AddEditTask} />
     </Stack.Navigator>
   );
 };
@@ -64,7 +64,7 @@ const AllTODOStack = () => {
 const MainStackNavigator = () => {
   return (
     <Stack.Navigator headerMode="none">
-      <Stack.Screen name="Registration" component={BottomTabNavigator} />
+      <Stack.Screen name="Registration" component={Registration} />
       <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
     </Stack.Navigator>
   );

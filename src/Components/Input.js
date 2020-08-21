@@ -27,6 +27,7 @@ const Input = React.memo(
     IconLeftColor,
     placeholderTextColor,
     ContainerView,
+    InputValue,
   }) => {
     const [Value, OnTextChange] = useState('');
 
@@ -48,7 +49,7 @@ const Input = React.memo(
             placeholderTextColor ? placeholderTextColor : '#000'
           }
           maxLength={maxLength ? maxLength : 150}
-          value={Value}
+          value={InputValue ? InputValue : Value}
           onChangeText={textChangeHandler}
         />
         {IconName && (

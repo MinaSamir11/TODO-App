@@ -67,6 +67,15 @@ class Api {
     });
   }
 
+  static async patch(IsToken, ...args) {
+    let server = await this.create(IsToken);
+
+    return server.patch(...args).catch((error) => {
+      console.log(error);
+      return error;
+    });
+  }
+
   static async delete(IsToken, ...args) {
     let server = await this.create(IsToken);
 

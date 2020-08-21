@@ -2,21 +2,34 @@ import * as types from '../Actions/types';
 import initialState from './initialState';
 
 export default function (state = initialState.TODO, action) {
+  console.log('ACtion', action);
   switch (action.type) {
     case types.GET_TODO: {
       return {
         ...state,
-        ToDoList: action.TODOList.TODOList,
-        TodayTODOList: action.TODOList.TodayTODOList,
-        StatusToDoResponse: action.TODOList.Status,
+        ToDoList: action.List['ToDoList']
+          ? action.List['ToDoList']
+          : [...state.ToDoList],
+        TodayTODOList: action.List['TodayTODOList']
+          ? action.List.TodayTODOList
+          : [...state.TodayTODOList],
+        StatusToDoResponse: action.List.Status,
       };
     }
-    case types.SET_TODO_RESPONSE: {
+
+    case types.SET_UPDATED_TODO: {
       return {
         ...state,
-        StatusToDoResponse: action.Status,
+        ToDoList: action.List['ToDoList']
+          ? action.List.ToDoList
+          : [...state.ToDoList],
+        TodayTODOList: action.List['TodayTODOList']
+          ? action.List.TodayTODOList
+          : [...state.TodayTODOList],
+        UpdatedToDoResponse: action.List.Status,
       };
     }
+
     default:
       return {
         ...state,
