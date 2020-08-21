@@ -6,7 +6,7 @@ import {Colors} from '../Assets';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const EmptyState = props => {
+const EmptyState = (props) => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -17,7 +17,11 @@ const EmptyState = props => {
           />
         )}
         {props.IconsName && (
-          <Icon color={'#CB4C5F'} name={props.IconsName} size={50} />
+          <Icon
+            color={Colors.SecondRelativeMainColor}
+            name={props.IconsName}
+            size={50}
+          />
         )}
         <Text style={{...styles.title, ...props.titleStyle}}>
           {props.MessageTitle}

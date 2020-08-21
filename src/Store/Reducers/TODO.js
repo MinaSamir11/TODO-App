@@ -7,6 +7,7 @@ export default function (state = initialState.TODO, action) {
       return {
         ...state,
         ToDoList: action.TODOList.TODOList,
+        TodayTODOList: action.TODOList.TodayTODOList,
         StatusToDoResponse: action.TODOList.Status,
       };
     }

@@ -4,6 +4,7 @@ export default {
   },
   TODO: {
     ToDoList: [],
+    TodayTODOList: [],
     StatusToDoResponse: null,
   },
 };

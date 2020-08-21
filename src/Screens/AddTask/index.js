@@ -1,10 +1,10 @@
 import React, {useState, useEffect, useCallback} from 'react';
 
-import {View, Text, ScrollView, Dimensions, Image} from 'react-native';
+import {View, Text, ScrollView} from 'react-native';
 
 import Styles from './styles';
 
-import {Button, LoadingModal, PopUp, Header, Input} from '../../Components';
+import {Button, LoadingModal, PopUp, Input} from '../../Components';
 
 import {Icons, Colors} from '../../Assets';
 
@@ -258,6 +258,9 @@ const Home = (props) => {
         <CalendarList
           markingType={'custom'}
           markedDates={markedDate[0]}
+          pastScrollRange={20}
+          // Max amount of months allowed to scroll to the future. Default = 50
+          futureScrollRange={20}
           style={{marginTop: 15}}
           hideDayNames={true}
           horizontal={true}
@@ -293,7 +296,7 @@ const Home = (props) => {
             />
           </View>
           <Input
-            maxLength={128}
+            maxLength={250}
             Error={TaskName !== '' ? false : true}
             ErrorTitle={'Task name is required'}
             PlaceHolder={'Enter Task Name'}

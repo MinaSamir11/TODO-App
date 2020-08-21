@@ -18,7 +18,7 @@ export const SignUpAuth = (Account) => {
     formDataAccount.append('username', Account.username);
     formDataAccount.append('password', Account.password);
 
-    let Request = await Api.post(ApiConstant.Register, formDataAccount);
+    let Request = await Api.post(false, ApiConstant.Register, formDataAccount);
 
     if (Request) {
       if (Request.response) {
@@ -34,6 +34,7 @@ export const SignUpAuth = (Account) => {
         );
       } else if (Request.status == 201) {
         let RequestToken = await Api.post(
+          false,
           ApiConstant.TokenCreate,
           formDataAccount,
         );
@@ -42,7 +43,7 @@ export const SignUpAuth = (Account) => {
           dispatch(
             setUser({
               ...RequestToken.data,
-              ...Account.username,
+              userName: Account.username,
               Status: RequestToken.status,
             }),
           );
@@ -91,7 +92,11 @@ export const SignInAuth = (Account) => {
     formDataAccount.append('username', Account.username);
     formDataAccount.append('password', Account.password);
 
-    let RequestToken = await Api.post(ApiConstant.TokenCreate, formDataAccount);
+    let RequestToken = await Api.post(
+      false,
+      ApiConstant.TokenCreate,
+      formDataAccount,
+    );
     console.log('API token', Request);
 
     if (RequestToken) {
@@ -110,7 +115,7 @@ export const SignInAuth = (Account) => {
         dispatch(
           setUser({
             ...RequestToken.data,
-            ...Account.username,
+            userName: Account.username,
             Status: RequestToken.status,
           }),
         );

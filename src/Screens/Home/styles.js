@@ -5,18 +5,19 @@ import {Colors} from '../../Assets';
 const styles = StyleSheet.create({
   MainContainer: {
     flex: 1,
-    backgroundColor: Colors.GrayBackgroundColor,
+    backgroundColor: Colors.SecondRelativeMainColor,
   },
   txtUserName: {
     fontSize: 19,
     fontWeight: 'bold',
     lineHeight: 30,
-    marginLeft: 25,
-    color: Colors.SecondRelativeMainColor,
+    marginStart: 25,
+    color: Colors.White,
     letterSpacing: 0.5,
+    marginEnd: 25,
   },
   ContainerTodayTask: {
-    marginTop: 40,
+    marginTop: 15,
     flexDirection: 'row',
     marginStart: 25,
     justifyContent: 'space-between',
@@ -28,6 +29,22 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: Colors.SecondRelativeMainColor,
     letterSpacing: 0.5,
+  },
+  FloatingBtn: {
+    marginTop: 0,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: Colors.RelativeMainColor,
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    zIndex: 5,
+  },
+  ViewTaskBtn: {
+    marginTop: 0,
+    backgroundColor: 'transparent',
+    marginEnd: 25,
   },
 });
 
