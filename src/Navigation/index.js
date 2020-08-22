@@ -10,6 +10,8 @@ import Home from '../Screens/Home';
 
 import AddEditTask from '../Screens/AddEditTask';
 
+import AllTasks from '../Screens/AllTasks';
+
 import {createStackNavigator} from '@react-navigation/stack';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -49,6 +51,7 @@ const TODOStack = () => {
     <Stack.Navigator headerMode="none">
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="AddTask" component={AddEditTask} />
+      <Stack.Screen name="AllTasks" component={AllTasks} />
     </Stack.Navigator>
   );
 };
@@ -64,7 +67,7 @@ const AllTODOStack = () => {
 const MainStackNavigator = () => {
   return (
     <Stack.Navigator headerMode="none">
-      <Stack.Screen name="Registration" component={Registration} />
+      {/* <Stack.Screen name="Registration" component={Registration} /> */}
       <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
     </Stack.Navigator>
   );

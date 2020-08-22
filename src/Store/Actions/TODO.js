@@ -123,11 +123,17 @@ export const Create_TODO = (TODOTask) => {
         if (check_TodaytaskDate(CreateTODORequest.data['created'])) {
           TodayTasks.push(CreateTODORequest.data);
         }
-        ToDoList.push(CreateTODORequest.data);
+        ToDoList.unshift(CreateTODORequest.data);
+        ToDoList.reverse(); // to make list item sorted as the incoming from API // if remove item index will changed of sorting will diffrent
+        ToDoList.sort(function (a, b) {
+          var dateA = new Date(a['created']),
+            dateB = new Date(b['created']);
+          return dateA - dateB;
+        });
 
         dispatch(
           setToDoUpdatedList({
-            ...ToDoList,
+            ToDoList: ToDoList.reverse(),
             TodayTODOList: TodayTasks,
             Status: CreateTODORequest.status,
           }),
@@ -185,7 +191,7 @@ export const Update_TODO = (newTODOTask, OldTODOTask) => {
           // if user change conent only without date updated content in array Today
 
           let objIndex = TodayTasks.findIndex(
-            (obj) => obj['id'] == OldTODOTask['id'],
+            (obj) => obj['id'] == UpdateTODORequest.data['id'],
           );
 
           TodayTasks[objIndex] = new TODOModel(UpdateTODORequest.data);
@@ -209,12 +215,17 @@ export const Update_TODO = (newTODOTask, OldTODOTask) => {
           console.log('filtered');
         }
         console.log('New last', UpdateTODORequest.status);
-        ToDoList.push(UpdateTODORequest.data);
+
+        let objIndex = ToDoList.findIndex(
+          (obj) => obj['id'] == UpdateTODORequest.data['id'],
+        );
+
+        ToDoList[objIndex] = new TODOModel(UpdateTODORequest.data); // edit data in array ALLTASKS
 
         if (OldTODOTask['completed'] !== UpdateTODORequest.data['completed']) {
           dispatch(
             setToDoList({
-              ...ToDoList,
+              ToDoList: ToDoList,
               TodayTODOList: TodayTasks,
               Status: UpdateTODORequest.status,
             }),
@@ -222,7 +233,7 @@ export const Update_TODO = (newTODOTask, OldTODOTask) => {
         } else {
           dispatch(
             setToDoUpdatedList({
-              ...ToDoList,
+              ToDoList: ToDoList,
               TodayTODOList: TodayTasks,
               Status: UpdateTODORequest.status,
             }),
@@ -275,12 +286,15 @@ export const Delete_TODO = (id, date) => {
             return item['id'] !== id;
           });
           TodayTasks = [...filtered];
-          console.log('filtered');
         }
+        let filtToDoList = ToDoList.filter(function (item, index, arr) {
+          return item['id'] !== id;
+        });
+        ToDoList = [...filtToDoList];
 
         dispatch(
           setToDoList({
-            ...ToDoList,
+            ToDoList: ToDoList,
             TodayTODOList: TodayTasks,
             Status: DeleteTODORequest.status,
           }),

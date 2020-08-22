@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 
-import {View, Text, FlatList} from 'react-native';
+import {View, Text, ScrollView, RefreshControl, FlatList} from 'react-native';
 
 import Styles from './styles';
 
@@ -12,39 +12,24 @@ import {useSelector, useDispatch} from 'react-redux';
 
 import * as TODOActions from '../../Store/Actions/TODO';
 
-import {useIsFocused} from '@react-navigation/native';
-
 import moment from 'moment';
 
-import Header from './Header';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Tasks from './RenderTasks';
-const Home = (props) => {
+
+import Header from '../Home/Header';
+
+const AllTasks = (props) => {
   const dispatch = useDispatch();
-  let [Focus, setFocus] = useState(false);
-
-  const isFocused = useIsFocused();
-
-  // useEffect(() => {
-  //   const unsubscribe = props.navigation.addListener('focus', () => {
-  //     // The screen is focused
-  //     // Call any action
-  //     setFocus(true);
-  //   });
-
-  //   // Return the function to unsubscribe from the event so it gets removed on unmount
-  //   return unsubscribe;
-  // }, [props.navigation]);
-
-  const UserInfo = useSelector((state) => state.Auth.UserInfo);
 
   const StatusToDoResponse = useSelector(
     (state) => state.TODO.StatusToDoResponse,
   );
 
-  const TodayTODOlist = useSelector((state) => state.TODO.TodayTODOList);
+  const AllTodoList = useSelector((state) => state.TODO.ToDoList);
 
-  let [LoadingModalVisible, IsLoadingModalVisible] = useState(true);
+  let [LoadingModalVisible, IsLoadingModalVisible] = useState(false);
 
   let [PopupModel, setVisiabiltyPopUp] = useState(false);
 
@@ -75,14 +60,6 @@ const Home = (props) => {
     }
   }, [StatusToDoResponse]);
 
-  const initFetch = useCallback(() => {
-    dispatch(TODOActions.get_TODOlist());
-  }, [dispatch]);
-
-  useEffect(() => {
-    initFetch();
-  }, [initFetch]);
-
   const PopupactionFunction = useCallback(() => {
     setVisiabiltyPopUp(() => false);
   }, [setVisiabiltyPopUp]);
@@ -105,77 +82,80 @@ const Home = (props) => {
     );
   };
 
+  const ReturnTask = (item) => {
+    if (item['completed']) {
+    }
+  };
+
   const OnDeleteTask = (Task) => {
     dispatch(TODOActions.Delete_TODO(Task['id'], Task['created']));
   };
 
+  const renderTasks = (item, index) => {
+    return (
+      <View key={index}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            marginTop: 20,
+            marginBottom: 8,
+          }}>
+          <Text
+            style={{
+              fontSize: 17,
+              letterSpacing: 0.8,
+              fontWeight: 'bold',
+            }}>
+            {moment(item['created']).format('ddd D MMM, YYYY')}
+          </Text>
+          <Text
+            style={{
+              fontSize: 17,
+              letterSpacing: 0.8,
+              fontWeight: 'bold',
+            }}>
+            {moment(item['due_date']).format('ddd D MMM, YYYY')}
+          </Text>
+        </View>
+        <Tasks
+          Data={item}
+          OnEdit={OnEdit}
+          OnCompleteTask={OnCompleteTask}
+          OnDeleteTask={OnDeleteTask}
+        />
+      </View>
+    );
+  };
   return (
     <View style={Styles.MainContainer}>
       <Header
         Date={`${moment().format('D MMMM, YYYY')} ${`\n`} ${moment().format(
           'dddd',
         )} ${'\n'}`}
-        RightText={`${
-          new Date().getHours() < 12
-            ? 'Good Morning'
-            : new Date().getHours() < 18
-            ? 'Good Afternoon'
-            : 'Good Evening'
-        } ${`\n`} ${UserInfo['userName']}!`}
+        Icon
       />
       <View
         style={{backgroundColor: '#E6EFF6', flex: 1, borderTopRightRadius: 50}}>
-        <View style={Styles.ContainerTodayTask}>
-          <Text style={Styles.TodayTasks}>Today's Tasks</Text>
-          <Button
-            title={'View All Tasks'}
-            Customstyle={Styles.ViewTaskBtn}
-            BtnTitleStyle={{
-              color: Colors.MainColor,
-              fontSize: 12,
-              textDecorationLine: 'underline',
-            }}
-            onPress={() => props.navigation.navigate('AllTasks')}
-          />
+        <View style={Styles.ContainerAllTask}>
+          <Text style={Styles.AllTasks}>COMPLETED / REMAINING TASKS</Text>
         </View>
-        {!TodayTODOlist.length > 0 && !LoadingModalVisible && (
+        {!AllTodoList.length > 0 && !LoadingModalVisible && (
           <View style={{flex: 1}}>
             <EmptyState
-              MessageTitle={'No Tasks, Today'}
-              IconsName={'calendar-blank'}
+              MessageTitle={"You Don't have Tasks, Yet"}
+              IconsName={'calendar-blank-multiple'}
               titleStyle={{fontSize: 18, letterSpacing: 0.7}}
             />
           </View>
         )}
-
         <View style={{flex: 1}}>
-          {!LoadingModalVisible && isFocused && (
-            <FlatList
-              data={TodayTODOlist}
-              keyExtractor={(item) => item['id'].toString()}
-              renderItem={({item, index}) => (
-                <View style={{flex: 1}}>
-                  <Tasks
-                    Data={item}
-                    OnEdit={OnEdit}
-                    OnCompleteTask={OnCompleteTask}
-                    OnDeleteTask={OnDeleteTask}
-                    key={index}
-                  />
-                </View>
-              )}
-              initialNumToRender={7}
-            />
-          )}
+          <ScrollView>
+            {AllTodoList.map((item, index) => renderTasks(item, index))}
+          </ScrollView>
         </View>
       </View>
-      <Button
-        Customstyle={Styles.FloatingBtn}
-        IconLeftName={'plus'}
-        IconColor={Colors.SecondRelativeMainColor}
-        IconSize={30}
-        onPress={() => props.navigation.push('AddTask')}
-      />
+
       <PopUp
         visible={PopupModel}
         message={MessagePopUp}
@@ -188,4 +168,4 @@ const Home = (props) => {
   );
 };
 
-export default Home;
+export default AllTasks;

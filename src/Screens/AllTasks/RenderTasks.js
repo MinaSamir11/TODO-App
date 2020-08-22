@@ -15,7 +15,6 @@ import {Colors} from '../../Assets';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const {width} = Dimensions.get('screen');
-
 const Task = (props) => {
   let opacity = new Animated.Value(0);
 
@@ -42,55 +41,57 @@ const Task = (props) => {
     },
   ];
 
-  useEffect(() => animate(Easing.out(Easing.exp)), []);
-
+  useEffect(() => {
+    animate(Easing.out(Easing.exp));
+  }, []);
   return (
     <Animated.View style={animatedStyles}>
-      <View style={styles.TitleContainer}>
-        <Text style={styles.titleTxt}>{props.Data['title']}</Text>
-        <TouchableOpacity onPress={() => props.OnEdit(props.Data)}>
-          <Icon name={'pencil'} size={20} color={Colors.fontDark} />
-        </TouchableOpacity>
+      <View style={{flex: 1, marginEnd: 10, padding: 10}}>
+        <View style={styles.TitleContainer}>
+          <Text style={styles.titleTxt}>{props.Data['title']}</Text>
+          <TouchableOpacity onPress={() => props.OnEdit(props.Data)}>
+            <Icon name={'pencil'} size={20} color={Colors.fontDark} />
+          </TouchableOpacity>
+        </View>
+        <View style={{marginTop: 13, marginBottom: 20}}>
+          <Text style={styles.ContentTxt}>{props.Data['content']}</Text>
+        </View>
+        <View style={styles.CompleteDeleteContainer}>
+          <TouchableOpacity onPress={() => props.OnDeleteTask(props.Data)}>
+            <Icon name={'delete'} size={20} color={'#540D47'} />
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={{marginTop: 13, marginBottom: 20}}>
-        <Text style={styles.ContentTxt}>{props.Data['content']}</Text>
-      </View>
-      <View style={styles.CompleteDeleteContainer}>
-        <TouchableOpacity onPress={() => props.OnDeleteTask(props.Data)}>
-          <Icon name={'delete'} size={20} color={'#540D47'} />
-        </TouchableOpacity>
-        {props.Data['completed'] && <Text style={styles.DoneTxt}>Done</Text>}
-        <TouchableOpacity onPress={() => props.OnCompleteTask(props.Data)}>
-          <Icon
-            name={
-              props.Data['completed']
-                ? 'checkbox-marked-circle'
-                : 'checkbox-marked-circle-outline'
-            }
-            size={20}
-            color={
-              props.Data['completed']
-                ? Colors.MainColor
-                : Colors.SecondRelativeMainColor
-            }
-          />
-        </TouchableOpacity>
-      </View>
+      {props.Data['completed'] && (
+        <View style={styles.ContainerDone}>
+          <Text
+            style={{
+              transform: [{rotate: '-90deg'}],
+              alignSelf: 'center',
+              color: '#233155',
+              fontWeight: 'bold',
+              fontSize: 17,
+            }}>
+            Done
+          </Text>
+        </View>
+      )}
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   MainContainer: {
-    padding: 10,
-    width: '90%',
+    // padding: 10,
     backgroundColor: Colors.White,
-    justifyContent: 'center',
+    width: '90%',
+    justifyContent: 'space-between',
     alignSelf: 'center',
-    marginBottom: 15,
+    marginBottom: 0,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     borderBottomRightRadius: 20,
+    flexDirection: 'row',
     flex: 1,
   },
   TitleContainer: {
@@ -119,6 +120,12 @@ const styles = StyleSheet.create({
     color: Colors.SecondRelativeMainColor,
     letterSpacing: 0.7,
     fontSize: 14,
+  },
+  ContainerDone: {
+    backgroundColor: Colors.SecondMainColor,
+    flexDirection: 'row',
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
   },
 });
 

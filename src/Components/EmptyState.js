@@ -17,11 +17,7 @@ const EmptyState = (props) => {
           />
         )}
         {props.IconsName && (
-          <Icon
-            color={Colors.SecondRelativeMainColor}
-            name={props.IconsName}
-            size={50}
-          />
+          <Icon color={Colors.MainColor} name={props.IconsName} size={50} />
         )}
         <Text style={{...styles.title, ...props.titleStyle}}>
           {props.MessageTitle}

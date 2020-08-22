@@ -36,7 +36,7 @@ class Api {
   static async create(IsToken) {
     return axios.create({
       baseURL: BASE_URL,
-      timeout: 1000,
+      timeout: 10000,
       headers: await getHeaders(IsToken),
     });
   }
