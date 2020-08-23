@@ -42,9 +42,10 @@ const LogIn = (props) => {
       IsLoadingModalVisible(false);
       dispatch(setUserProfile({...UserInfo, Status: 0}));
       props.props.replace('BottomTabNavigator');
-    } else if (UserInfo.Status == 50) {
+    } else if (UserInfo.Status == 408) {
       IsLoadingModalVisible(false);
       setMessagePopUp('No internet Connection');
+      dispatch(setUserProfile({Status: 0}));
       setVisiabiltyPopUp(true);
     } else if (UserInfo.Status == 401) {
       IsLoadingModalVisible(false);

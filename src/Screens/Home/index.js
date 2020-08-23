@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 
-import {View, Text, FlatList} from 'react-native';
+import {View, Text, FlatList, RefreshControl} from 'react-native';
 
 import Styles from './styles';
 
@@ -19,22 +19,11 @@ import moment from 'moment';
 import Header from './Header';
 
 import Tasks from './RenderTasks';
+
 const Home = (props) => {
   const dispatch = useDispatch();
-  let [Focus, setFocus] = useState(false);
 
   const isFocused = useIsFocused();
-
-  // useEffect(() => {
-  //   const unsubscribe = props.navigation.addListener('focus', () => {
-  //     // The screen is focused
-  //     // Call any action
-  //     setFocus(true);
-  //   });
-
-  //   // Return the function to unsubscribe from the event so it gets removed on unmount
-  //   return unsubscribe;
-  // }, [props.navigation]);
 
   const UserInfo = useSelector((state) => state.Auth.UserInfo);
 
@@ -50,6 +39,8 @@ const Home = (props) => {
 
   let [MessagePopUp, setMessagePopUp] = useState('');
 
+  const [refreshing, setRefreshing] = React.useState(false);
+
   const setToDoList = (ToDoStatus) => {
     return {
       List: ToDoStatus,
@@ -57,20 +48,51 @@ const Home = (props) => {
     };
   };
 
+  const setUserProfile = (userState) => {
+    return {
+      userData: userState,
+      type: 'GET_SIGNINAUTH',
+    };
+  };
+
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('com.dailymealz.userInfo');
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+      // error reading value
+    }
+  };
+
   useEffect(() => {
     if (StatusToDoResponse != null) {
       if (StatusToDoResponse == 200) {
+        setRefreshing(false);
         IsLoadingModalVisible(false);
-        console.log('Wrong', StatusToDoResponse);
         dispatch(setToDoList({Status: null}));
       } else if (StatusToDoResponse == 408) {
         IsLoadingModalVisible(false);
+        setRefreshing(false);
         setMessagePopUp('No internet Connection');
         dispatch(setToDoList({Status: null}));
         setVisiabiltyPopUp(true);
       } else if (StatusToDoResponse == 401) {
         IsLoadingModalVisible(false);
+        setRefreshing(false);
+
         dispatch(setToDoList({Status: null}));
+        RefreshToken();
+      } else if (UserInfo.Status == 200) {
+        IsLoadingModalVisible(false);
+        setRefreshing(false);
+        dispatch(setUserProfile({...UserInfo, Status: 0}));
+      } else if (UserInfo.Status == 400) {
+        dispatch(setUserProfile({...UserInfo, Status: 0}));
+        props.navigation.replace('AuthStack');
+        setRefreshing(false);
+      } else {
+        IsLoadingModalVisible(false);
+        setRefreshing(false);
       }
     }
   }, [StatusToDoResponse]);
@@ -87,6 +109,20 @@ const Home = (props) => {
     setVisiabiltyPopUp(() => false);
   }, [setVisiabiltyPopUp]);
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    initFetch();
+  }, []);
+
+  const RefreshToken = async () => {
+    const user = await getData();
+    dispatch(
+      Auth.Refresh({
+        refresh: user['refresh'],
+      }),
+    );
+  };
+
   const OnEdit = (Task) => {
     props.navigation.push('AddTask', {
       Task,
@@ -94,7 +130,6 @@ const Home = (props) => {
   };
 
   const OnCompleteTask = (Task) => {
-    console.log('Task', Task);
     dispatch(
       TODOActions.Update_TODO(
         {
@@ -152,6 +187,17 @@ const Home = (props) => {
           {!LoadingModalVisible && isFocused && (
             <FlatList
               data={TodayTODOlist}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  colors={[
+                    Colors.MainColor,
+                    Colors.MarkerLabelColor,
+                    Colors.DarkGrey,
+                  ]}
+                />
+              }
               keyExtractor={(item) => item['id'].toString()}
               renderItem={({item, index}) => (
                 <View style={{flex: 1}}>

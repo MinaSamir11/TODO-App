@@ -38,8 +38,13 @@ export const SignUpAuth = (Account) => {
           ApiConstant.TokenCreate,
           formDataAccount,
         );
-        console.log('API token', RequestToken);
         if (RequestToken.status == 200) {
+          //store in asyncstorage
+          storeData({
+            userName: Account.username,
+            refresh: RequestToken.data['refresh'],
+            access: RequestToken.data['access'],
+          });
           dispatch(
             setUser({
               ...RequestToken.data,
@@ -47,19 +52,19 @@ export const SignUpAuth = (Account) => {
               Status: RequestToken.status,
             }),
           );
-          //store in asyncstorage
-          storeData({
-            userName: Account.username,
-            ...RequestToken.data,
-          });
         } else {
-          console.log('Ress', RequestToken.status);
           dispatch(
             setUser({
-              Status: RequestToken.status,
+              Status: 408,
             }),
           );
         }
+      } else {
+        dispatch(
+          setUser({
+            Status: 408,
+          }),
+        );
       }
     }
   };
@@ -78,7 +83,6 @@ const storeData = async (value) => {
 const getData = async () => {
   try {
     const jsonValue = await AsyncStorage.getItem('com.dailymealz.userInfo');
-    console.log('Async storage', JSON.parse(jsonValue));
     return jsonValue != null ? JSON.parse(jsonValue) : null;
   } catch (e) {
     // error reading value
@@ -97,7 +101,6 @@ export const SignInAuth = (Account) => {
       ApiConstant.TokenCreate,
       formDataAccount,
     );
-    console.log('API token', Request);
 
     if (RequestToken) {
       if (RequestToken.response) {
@@ -112,26 +115,81 @@ export const SignInAuth = (Account) => {
           }),
         );
       } else if (RequestToken.status == 200) {
+        //store in asyncstorage
+        // await removeValue();
+        storeData({
+          userName: Account.username,
+          access: RequestToken.data['access'],
+          refresh: RequestToken.data['refresh'],
+        });
         dispatch(
           setUser({
-            ...RequestToken.data,
             userName: Account.username,
             Status: RequestToken.status,
           }),
         );
-        //store in asyncstorage
-        storeData({
-          userName: Account.username,
-          ...RequestToken.data,
-        });
       } else {
-        console.log('Ress', RequestToken.status);
         dispatch(
           setUser({
-            Status: RequestToken.status,
+            Status: 408,
           }),
         );
       }
     }
   };
+};
+
+export const Refresh = (Refresh) => {
+  return async (dispatch) => {
+    let myJson = JSON.stringify(Refresh);
+    let RequestRefreshAccess = await Api.post(
+      false,
+      ApiConstant.Refresh,
+      myJson,
+    );
+
+    if (RequestRefreshAccess) {
+      if (RequestRefreshAccess.response) {
+        // Request made and server responded
+        console.log(RequestRefreshAccess.response.data);
+        console.log(RequestRefreshAccess.response.status);
+        console.log(RequestRefreshAccess.response.headers);
+
+        dispatch(
+          setUser({
+            Status: RequestRefreshAccess.response.status,
+          }),
+        );
+      } else if (RequestRefreshAccess.status == 200) {
+        const mUser = await getData();
+        // await removeValue();
+        await storeData({
+          userName: mUser.userName,
+          refresh: mUser['refresh'],
+          access: RequestRefreshAccess.data['access'],
+        });
+
+        dispatch(
+          setUser({
+            userName: mUser.userName,
+            Status: RequestRefreshAccess.status,
+          }),
+        );
+      } else {
+        dispatch(
+          setUser({
+            Status: RequestRefreshAccess.status,
+          }),
+        );
+      }
+    }
+  };
+};
+
+const removeValue = async () => {
+  try {
+    await AsyncStorage.removeItem('com.dailymealz.userInfo');
+  } catch (e) {
+    // remove error
+  }
 };

@@ -6,15 +6,13 @@ import Styles from './styles';
 
 import {Button, LoadingModal, PopUp, EmptyState} from '../../Components';
 
-import {Icons, Colors} from '../../Assets';
+import {Icons} from '../../Assets';
 
 import {useSelector, useDispatch} from 'react-redux';
 
 import * as TODOActions from '../../Store/Actions/TODO';
 
 import moment from 'moment';
-
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Tasks from './RenderTasks';
 
@@ -46,7 +44,6 @@ const AllTasks = (props) => {
     if (StatusToDoResponse != null) {
       if (StatusToDoResponse == 200) {
         IsLoadingModalVisible(false);
-        console.log('Wrong', StatusToDoResponse);
         dispatch(setToDoList({Status: null}));
       } else if (StatusToDoResponse == 408) {
         IsLoadingModalVisible(false);
@@ -71,7 +68,6 @@ const AllTasks = (props) => {
   };
 
   const OnCompleteTask = (Task) => {
-    console.log('Task', Task);
     dispatch(
       TODOActions.Update_TODO(
         {
@@ -82,11 +78,6 @@ const AllTasks = (props) => {
     );
   };
 
-  const ReturnTask = (item) => {
-    if (item['completed']) {
-    }
-  };
-
   const OnDeleteTask = (Task) => {
     dispatch(TODOActions.Delete_TODO(Task['id'], Task['created']));
   };
@@ -94,27 +85,11 @@ const AllTasks = (props) => {
   const renderTasks = (item, index) => {
     return (
       <View key={index}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            marginTop: 20,
-            marginBottom: 8,
-          }}>
-          <Text
-            style={{
-              fontSize: 17,
-              letterSpacing: 0.8,
-              fontWeight: 'bold',
-            }}>
+        <View style={Styles.ContainerTOFROM}>
+          <Text style={Styles.To}>
             {moment(item['created']).format('ddd D MMM, YYYY')}
           </Text>
-          <Text
-            style={{
-              fontSize: 17,
-              letterSpacing: 0.8,
-              fontWeight: 'bold',
-            }}>
+          <Text style={Styles.From}>
             {moment(item['due_date']).format('ddd D MMM, YYYY')}
           </Text>
         </View>

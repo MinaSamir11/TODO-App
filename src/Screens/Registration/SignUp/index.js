@@ -39,17 +39,15 @@ const SignUp = (props) => {
   };
 
   useEffect(() => {
-    console.log('auth', UserInfo);
-
     if (UserInfo.Status == 200) {
       IsLoadingModalVisible(false);
       dispatch(setUserProfile({...UserInfo, Status: 0}));
       props.props.replace('BottomTabNavigator');
-    } else if (UserInfo.Status == 50) {
-      dispatch(setUserProfile({Status: 0}));
+    } else if (UserInfo.Status == 408) {
       IsLoadingModalVisible(false);
       setMessagePopUp('No internet Connection');
       setVisiabiltyPopUp(true);
+      dispatch(setUserProfile({Status: 0}));
     } else if (UserInfo.Status == 400) {
       dispatch(setUserProfile({Status: 0}));
       IsLoadingModalVisible(false);
@@ -136,8 +134,6 @@ const SignUp = (props) => {
         input: 'ErrorPassword',
       });
       IsLoadingModalVisible(true);
-      console.log('Dispatch');
-
       dispatch(
         Auth.SignUpAuth({
           username: formState.Account.userName.toLowerCase(),
@@ -177,7 +173,7 @@ const SignUp = (props) => {
             onChangeText={(text) => OnChangePassword(text)}
             InputStyle={[Styles.InputStyle]}
             IconName={secureTextIcon}
-            IconLeftColor={Colors.RelativeMainColor}
+            IconLeftColor={Colors.SecondRelativeMainColor}
             changeIcon={() => {
               setsecureText(!secureText);
               if (secureText) {
@@ -197,7 +193,6 @@ const SignUp = (props) => {
           visible={PopupModel}
           message={MessagePopUp}
           LeftBtnName={'OK'}
-          topIcon={Icons.Failed}
           LeftBtnFunction={PopupactionFunction}
         />
       </ScrollView>

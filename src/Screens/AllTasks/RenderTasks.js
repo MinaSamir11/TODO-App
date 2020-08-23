@@ -49,9 +49,11 @@ const Task = (props) => {
       <View style={{flex: 1, marginEnd: 10, padding: 10}}>
         <View style={styles.TitleContainer}>
           <Text style={styles.titleTxt}>{props.Data['title']}</Text>
-          <TouchableOpacity onPress={() => props.OnEdit(props.Data)}>
-            <Icon name={'pencil'} size={20} color={Colors.fontDark} />
-          </TouchableOpacity>
+          {!props.Period && (
+            <TouchableOpacity onPress={() => props.OnEdit(props.Data)}>
+              <Icon name={'pencil'} size={20} color={Colors.fontDark} />
+            </TouchableOpacity>
+          )}
         </View>
         <View style={{marginTop: 13, marginBottom: 20}}>
           <Text style={styles.ContentTxt}>{props.Data['content']}</Text>
@@ -59,6 +61,22 @@ const Task = (props) => {
         <View style={styles.CompleteDeleteContainer}>
           <TouchableOpacity onPress={() => props.OnDeleteTask(props.Data)}>
             <Icon name={'delete'} size={20} color={'#540D47'} />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => props.OnCompleteTask(props.Data)}>
+            <Icon
+              name={
+                props.Data['completed']
+                  ? 'checkbox-marked-circle'
+                  : 'checkbox-marked-circle-outline'
+              }
+              size={20}
+              color={
+                props.Data['completed']
+                  ? Colors.MainColor
+                  : Colors.SecondRelativeMainColor
+              }
+            />
           </TouchableOpacity>
         </View>
       </View>

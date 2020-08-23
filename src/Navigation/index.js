@@ -12,6 +12,12 @@ import AddEditTask from '../Screens/AddEditTask';
 
 import AllTasks from '../Screens/AllTasks';
 
+import PeriodTasks from '../Screens/PeriodTasks';
+
+import Splash from '../Screens/Splash';
+
+import UserProfile from '../Screens/Profile';
+
 import {createStackNavigator} from '@react-navigation/stack';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -30,8 +36,10 @@ const BottomTabNavigator = () => {
           let iconName;
           if (route.name === 'TODO') {
             iconName = focused ? 'calendar-text' : 'calendar-text-outline';
-          } else if (route.name === 'All TODO') {
+          } else if (route.name === 'Period Tasks') {
             iconName = focused ? 'clipboard-list' : 'clipboard-list-outline';
+          } else if (route.name === 'User Profile') {
+            iconName = focused ? 'account-circle' : 'account-circle-outline';
           }
           return <Icons name={iconName} size={size} color={color} />;
         },
@@ -41,7 +49,8 @@ const BottomTabNavigator = () => {
         inactiveTintColor: Colors.SecondRelativeMainColor,
       }}>
       <Tab.Screen name="TODO" component={TODOStack} />
-      <Tab.Screen name="All TODO" component={AllTODOStack} />
+      <Tab.Screen name="Period Tasks" component={PeriodTasks} />
+      <Tab.Screen name="User Profile" component={UserProfile} />
     </Tab.Navigator>
   );
 };
@@ -56,9 +65,10 @@ const TODOStack = () => {
   );
 };
 
-const AllTODOStack = () => {
+const AuthStack = () => {
   return (
     <Stack.Navigator headerMode="none">
+      <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="Registration" component={Registration} />
     </Stack.Navigator>
   );
@@ -67,7 +77,7 @@ const AllTODOStack = () => {
 const MainStackNavigator = () => {
   return (
     <Stack.Navigator headerMode="none">
-      {/* <Stack.Screen name="Registration" component={Registration} /> */}
+      <Stack.Screen name="AuthStack" component={AuthStack} />
       <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
     </Stack.Navigator>
   );

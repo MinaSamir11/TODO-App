@@ -32,6 +32,22 @@ const styles = StyleSheet.create({
     color: Colors.SecondRelativeMainColor,
     letterSpacing: 0.5,
   },
+  To: {
+    fontSize: 17,
+    letterSpacing: 0.8,
+    fontWeight: 'bold',
+  },
+  From: {
+    fontSize: 17,
+    letterSpacing: 0.8,
+    fontWeight: 'bold',
+  },
+  ContainerTOFROM: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 20,
+    marginBottom: 8,
+  },
 });
 
 export default styles;

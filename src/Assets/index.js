@@ -1,5 +1,7 @@
 export * from './Colors';
 
+export * from './ColorsRandom';
+
 export const Images = {
   Logo: require('./Images/logo.png'),
 };

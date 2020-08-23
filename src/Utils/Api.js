@@ -5,6 +5,7 @@ const axios = require('axios');
 const getData = async () => {
   try {
     const jsonValue = await AsyncStorage.getItem('com.dailymealz.userInfo');
+    console.log('READ HEADER', jsonValue);
     return jsonValue != null ? JSON.parse(jsonValue) : null;
   } catch (e) {
     // error reading value
@@ -18,6 +19,7 @@ export default {
   Register: '/api/register',
   TokenCreate: '/api/token/',
   Todo: '/todo/',
+  Refresh: '/api/token/refresh/',
 };
 
 const getHeaders = async (IsToken) => {

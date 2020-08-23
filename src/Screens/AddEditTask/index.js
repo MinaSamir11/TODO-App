@@ -30,9 +30,18 @@ const Home = (props) => {
     };
   };
 
+  const setUserProfile = (userState) => {
+    return {
+      userData: userState,
+      type: 'GET_SIGNINAUTH',
+    };
+  };
+
   const UpdatedToDoResponse = useSelector(
     (state) => state.TODO.UpdatedToDoResponse,
   );
+
+  const UserInfo = useSelector((state) => state.Auth.UserInfo);
 
   let [LoadingModalVisible, IsLoadingModalVisible] = useState(false);
 
@@ -96,14 +105,39 @@ const Home = (props) => {
       } else if (UpdatedToDoResponse == 401) {
         IsLoadingModalVisible(false);
         setShowProcessModal(true);
+        RefreshToken();
       } else if (UpdatedToDoResponse == 408) {
         IsLoadingModalVisible(false);
         setShowProcessModal(true);
+      } else if (UserInfo.Status == 200) {
+        IsLoadingModalVisible(false);
+        dispatch(setUserProfile({...UserInfo, Status: 0}));
+      } else if (UserInfo.Status == 400) {
+        dispatch(setUserProfile({...UserInfo, Status: 0}));
+        props.navigation.replace('AuthStack');
       } else {
         IsLoadingModalVisible(false);
       }
     }
   }, [UpdatedToDoResponse]);
+
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('com.dailymealz.userInfo');
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+      // error reading value
+    }
+  };
+
+  const RefreshToken = async () => {
+    const user = await getData();
+    dispatch(
+      Auth.Refresh({
+        refresh: user['refresh'],
+      }),
+    );
+  };
 
   const InitMarkedDate = (date) => {
     if (date === StartDate) {
@@ -139,7 +173,6 @@ const Home = (props) => {
   };
 
   const OnChangeDay = (day) => {
-    console.log(day);
     if (StartDate == '') {
       setStartDate(day.dateString);
       var tomorrow = new Date(day.dateString);
@@ -246,7 +279,6 @@ const Home = (props) => {
       setMessagePopUp('Please Enter Date');
       setVisiabiltyPopUp(true);
     } else {
-      console.log(EndDate);
       setMessagePopUp('Please Enter Task Name');
       setVisiabiltyPopUp(true);
     }

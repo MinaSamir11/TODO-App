@@ -68,8 +68,6 @@ export const get_TODOlist = () => {
           }),
         );
       } else if (TODOListRequest.status == 200) {
-        console.log('API token', TODOListRequest);
-
         let TodayTasks = Filter_TodayTasks(TODOListRequest.data);
 
         dispatch(
@@ -80,7 +78,6 @@ export const get_TODOlist = () => {
           }),
         );
       } else if (TODOListRequest.status == undefined) {
-        console.log('Ress', TODOListRequest.status);
         dispatch(
           setToDoList({
             Status: 408,
@@ -88,7 +85,6 @@ export const get_TODOlist = () => {
         );
       }
     } else {
-      console.log('Error ', TODOListRequest.response.status);
       dispatch(
         setToDoList({
           Status: 408,
@@ -139,7 +135,6 @@ export const Create_TODO = (TODOTask) => {
           }),
         );
       } else if (CreateTODORequest.status == undefined) {
-        console.log('Ress', CreateTODORequest);
         dispatch(
           setToDoUpdatedList({
             Status: 408,
@@ -195,14 +190,12 @@ export const Update_TODO = (newTODOTask, OldTODOTask) => {
           );
 
           TodayTasks[objIndex] = new TODOModel(UpdateTODORequest.data);
-          console.log('Edit Content');
         } else if (
           !check_TodaytaskDate(OldTODOTask['created']) &&
           check_TodaytaskDate(UpdateTODORequest.data['created'])
         ) {
           // if user update date to today add this task in array today
           TodayTasks.push(UpdateTODORequest.data);
-          console.log('Add new ');
         } else if (
           check_TodaytaskDate(OldTODOTask['created']) &&
           !check_TodaytaskDate(UpdateTODORequest.data['created'])
@@ -212,9 +205,7 @@ export const Update_TODO = (newTODOTask, OldTODOTask) => {
             return item['id'] !== UpdateTODORequest.data['id'];
           });
           TodayTasks = [...filtered];
-          console.log('filtered');
         }
-        console.log('New last', UpdateTODORequest.status);
 
         let objIndex = ToDoList.findIndex(
           (obj) => obj['id'] == UpdateTODORequest.data['id'],
@@ -223,6 +214,7 @@ export const Update_TODO = (newTODOTask, OldTODOTask) => {
         ToDoList[objIndex] = new TODOModel(UpdateTODORequest.data); // edit data in array ALLTASKS
 
         if (OldTODOTask['completed'] !== UpdateTODORequest.data['completed']) {
+          // once change in complete task
           dispatch(
             setToDoList({
               ToDoList: ToDoList,
@@ -240,7 +232,6 @@ export const Update_TODO = (newTODOTask, OldTODOTask) => {
           );
         }
       } else if (UpdateTODORequest.status == undefined) {
-        console.log('Time OUT', UpdateTODORequest);
         dispatch(
           setToDoUpdatedList({
             Status: 408,
@@ -300,7 +291,6 @@ export const Delete_TODO = (id, date) => {
           }),
         );
       } else if (DeleteTODORequest.status == undefined) {
-        console.log('Time OUT', DeleteTODORequest);
         dispatch(
           setToDoUpdatedList({
             Status: 408,
