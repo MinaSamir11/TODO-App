@@ -1,45 +1,51 @@
-import React, {useState, useEffect, useCallback} from 'react';
-
+import React from 'react';
 import {View, Image, Text, StyleSheet} from 'react-native';
-
 import SwipeUpDownModal from 'react-native-swipe-modal-up-down';
-
 import {Button} from '../../Components';
 
-const ProcessModal = (props) => {
-  return (
-    <SwipeUpDownModal
-      modalVisible={props.ShowTransaction}
-      PressToanimate={props.ClosedAnimation}
-      //if you don't pass HeaderContent you should pass marginTop in view of ContentModel to Make modal swipeable
-      ContentModal={
-        <View style={Styles.containerContent}>
-          <Image source={props.ImageStatus} style={Styles.IndicatorImage} />
-          <Text style={Styles.TranscStatus}>{props.TransactionStatus}</Text>
-          <Text style={Styles.TranscMessage}>{props.TransactionMessage}</Text>
-          <Button
-            title={props.BtnTitle}
-            BtnTitleStyle={{fontSize: 15}}
-            Customstyle={Styles.LoginBtn}
-            onPress={() => {
-              props.TakeAction();
-            }}
-          />
-        </View>
-      }
-      HeaderStyle={Styles.headerContent}
-      ContentModalStyle={Styles.Modal}
-      HeaderContent={
-        <View style={Styles.containerHeader}>
-          <View style={Styles.ModalHeadr} />
-        </View>
-      }
-      onClose={() => {
-        props.OnDismiss();
-      }}
-    />
-  );
-};
+const ProcessModal = React.memo(
+  ({
+    ShowTransaction,
+    ClosedAnimation,
+    ImageStatus,
+    TransactionStatus,
+    TransactionMessage,
+    BtnTitle,
+    TakeAction,
+    OnDismiss,
+  }) => {
+    return (
+      <SwipeUpDownModal
+        modalVisible={ShowTransaction}
+        PressToanimate={ClosedAnimation}
+        //if you don't pass HeaderContent you should pass marginTop in view of ContentModel to Make modal swipeable
+        ContentModal={
+          <View style={Styles.containerContent}>
+            <Image source={ImageStatus} style={Styles.IndicatorImage} />
+            <Text style={Styles.TranscStatus}>{TransactionStatus}</Text>
+            <Text style={Styles.TranscMessage}>{TransactionMessage}</Text>
+            <Button
+              title={BtnTitle}
+              BtnTitleStyle={{fontSize: 15}}
+              Customstyle={Styles.LoginBtn}
+              onPress={() => TakeAction()}
+            />
+          </View>
+        }
+        HeaderStyle={Styles.headerContent}
+        ContentModalStyle={Styles.Modal}
+        HeaderContent={
+          <View style={Styles.containerHeader}>
+            <View style={Styles.ModalHeadr} />
+          </View>
+        }
+        onClose={() => {
+          OnDismiss();
+        }}
+      />
+    );
+  },
+);
 
 const Styles = StyleSheet.create({
   ModalHeadr: {

@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react';
-
 import {
   View,
   Text,
@@ -9,13 +8,13 @@ import {
   Easing,
   Dimensions,
 } from 'react-native';
-
 import {Colors} from '../../Assets';
-
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
 const {width} = Dimensions.get('screen');
+
 const Task = (props) => {
+  const {Data, Period, OnEdit, OnDeleteTask, OnCompleteTask} = props;
+
   let opacity = new Animated.Value(0);
 
   const animate = (easing) => {
@@ -44,35 +43,36 @@ const Task = (props) => {
   useEffect(() => {
     animate(Easing.out(Easing.exp));
   }, []);
+
   return (
     <Animated.View style={animatedStyles}>
       <View style={{flex: 1, marginEnd: 10, padding: 10}}>
         <View style={styles.TitleContainer}>
-          <Text style={styles.titleTxt}>{props.Data['title']}</Text>
-          {!props.Period && (
-            <TouchableOpacity onPress={() => props.OnEdit(props.Data)}>
+          <Text style={styles.titleTxt}>{Data['title']}</Text>
+          {!Period && (
+            <TouchableOpacity onPress={() => OnEdit(Data)}>
               <Icon name={'pencil'} size={20} color={Colors.fontDark} />
             </TouchableOpacity>
           )}
         </View>
         <View style={{marginTop: 13, marginBottom: 20}}>
-          <Text style={styles.ContentTxt}>{props.Data['content']}</Text>
+          <Text style={styles.ContentTxt}>{Data['content']}</Text>
         </View>
         <View style={styles.CompleteDeleteContainer}>
-          <TouchableOpacity onPress={() => props.OnDeleteTask(props.Data)}>
+          <TouchableOpacity onPress={() => OnDeleteTask(Data)}>
             <Icon name={'delete'} size={20} color={'#540D47'} />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => props.OnCompleteTask(props.Data)}>
+          <TouchableOpacity onPress={() => OnCompleteTask(Data)}>
             <Icon
               name={
-                props.Data['completed']
+                Data['completed']
                   ? 'checkbox-marked-circle'
                   : 'checkbox-marked-circle-outline'
               }
               size={20}
               color={
-                props.Data['completed']
+                Data['completed']
                   ? Colors.MainColor
                   : Colors.SecondRelativeMainColor
               }
@@ -80,7 +80,7 @@ const Task = (props) => {
           </TouchableOpacity>
         </View>
       </View>
-      {props.Data['completed'] && (
+      {Data['completed'] && (
         <View style={styles.ContainerDone}>
           <Text
             style={{
@@ -100,7 +100,6 @@ const Task = (props) => {
 
 const styles = StyleSheet.create({
   MainContainer: {
-    // padding: 10,
     backgroundColor: Colors.White,
     width: '90%',
     justifyContent: 'space-between',

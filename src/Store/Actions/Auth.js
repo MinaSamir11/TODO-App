@@ -185,11 +185,3 @@ export const Refresh = (Refresh) => {
     }
   };
 };
-
-const removeValue = async () => {
-  try {
-    await AsyncStorage.removeItem('com.dailymealz.userInfo');
-  } catch (e) {
-    // remove error
-  }
-};

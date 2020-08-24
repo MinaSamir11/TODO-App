@@ -15,7 +15,6 @@ export default function (state = initialState.TODO, action) {
         StatusToDoResponse: action.List.Status,
       };
     }
-
     case types.SET_UPDATED_TODO: {
       return {
         ...state,

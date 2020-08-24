@@ -1,25 +1,14 @@
 import React, {useState, useEffect} from 'react';
-
 import {View, Text, ScrollView, FlatList} from 'react-native';
-
 import SwipeUpDownModal from 'react-native-swipe-modal-up-down';
-
 import Styles from './styles';
-
 import {Button, PopUp, EmptyState} from '../../Components';
-
 import {Icons, Colors, ColorsRandom} from '../../Assets';
-
 import {useSelector, useDispatch} from 'react-redux';
-
 import {CalendarList} from 'react-native-calendars';
-
 import moment from 'moment';
-
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
 import Tasks from '../AllTasks/RenderTasks';
-
 import * as TODOActions from '../../Store/Actions/TODO';
 
 const PeriodTasks = () => {
@@ -141,7 +130,7 @@ const PeriodTasks = () => {
   };
 
   const OnDeleteTask = (Task) => {
-    dispatch(TODOActions.Delete_TODO(Task['id'], Task['created']));
+    dispatch(TODOActions.Delete_TODO(Task));
   };
 
   const renderTasks = (item, index) => {

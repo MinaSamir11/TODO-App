@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
   Text,
   TouchableOpacity,
@@ -8,9 +7,7 @@ import {
   Platform,
   View,
 } from 'react-native';
-
-import {Colors, Icons} from '../Assets';
-
+import {Colors} from '../Assets';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Button = React.memo(

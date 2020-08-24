@@ -20,7 +20,11 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import ProcessModal from './ProcessModal';
 
+import TODOModel from '../../Model/TODOModel';
+
 const Home = (props) => {
+  const {EditTask} = props.route.params !== undefined && props.route.params;
+
   const dispatch = useDispatch();
 
   const setToDoList = (ToDoStatus) => {
@@ -50,19 +54,15 @@ const Home = (props) => {
   let [MessagePopUp, setMessagePopUp] = useState('');
 
   let [StartDate, setStartDate] = useState(
-    props.route.params !== undefined ? props.route.params.Task['created'] : '',
+    !EditTask ? '' : EditTask['created'],
   );
 
-  let [EndDate, setEndDate] = useState(
-    props.route.params !== undefined ? props.route.params.Task['due_date'] : '',
-  );
+  let [EndDate, setEndDate] = useState(!EditTask ? '' : EditTask['due_date']);
 
-  let [TaskName, setTaskName] = useState(
-    props.route.params !== undefined ? props.route.params.Task['title'] : null,
-  );
+  let [TaskName, setTaskName] = useState(!EditTask ? null : EditTask['title']);
 
   let [TaskContent, setTaskContent] = useState(
-    props.route.params !== undefined ? props.route.params.Task['content'] : '',
+    !EditTask ? '' : EditTask['content'],
   );
 
   let [markedDate, setmarkedDate] = useState([]);
@@ -214,6 +214,7 @@ const Home = (props) => {
     setVisiabiltyPopUp(() => false);
     if (MessagePopUp == 'Done') {
       props.navigation.goBack();
+      // make status network to default null
       dispatch(
         setToDoList({
           Status: null,
@@ -231,14 +232,15 @@ const Home = (props) => {
   };
 
   const CheckChangedData = () => {
-    if (props.route.params !== undefined) {
-      if (props.route.params.Task['title'] !== TaskName) return false;
-      else if (props.route.params.Task['content'] !== TaskContent) return false;
-      else if (props.route.params.Task['created'] !== StartDate) return false;
-      else if (props.route.params.Task['due_date'] !== EndDate) return false;
-      else {
-        return true;
-      }
+    if (EditTask) {
+      if (
+        EditTask['title'] !== TaskName ||
+        EditTask['content'] !== TaskContent ||
+        EditTask['created'] !== StartDate ||
+        EditTask['due_date'] !== EndDate
+      )
+        return false;
+      else return true;
     }
   };
 
@@ -246,7 +248,7 @@ const Home = (props) => {
     if (TaskName !== null && TaskName !== '') {
       if (StartDate !== '' && EndDate !== '') {
         IsLoadingModalVisible(true);
-        if (props.route.params === undefined) {
+        if (EditTask === undefined) {
           dispatch(
             TODOActions.Create_TODO({
               title: TaskName,
@@ -259,15 +261,13 @@ const Home = (props) => {
         } else {
           dispatch(
             TODOActions.Update_TODO(
-              {
-                title: TaskName,
-                content: TaskContent,
-                created: StartDate,
-                due_date: EndDate,
-              },
-              {
-                ...props.route.params.Task,
-              },
+              new TODOModel({
+                title: EditTask['title'] !== TaskName && TaskName,
+                content: EditTask['content'] !== TaskContent && TaskContent,
+                created: EditTask['created'] !== StartDate && StartDate,
+                due_date: EditTask['due_date'] !== EndDate && EndDate,
+              }),
+              EditTask,
             ),
           );
         }
@@ -372,12 +372,8 @@ const Home = (props) => {
               {props.route.params === undefined ? 'ADD' : 'EDIT'} TASK DETAILS
             </Text>
             <Button
-              disabled={
-                props.route.params === undefined ? false : CheckChangedData()
-              }
-              title={
-                props.route.params !== undefined ? 'Edit Task' : 'Add Task'
-              }
+              disabled={EditTask === undefined ? false : CheckChangedData()}
+              title={EditTask !== undefined ? 'Edit Task' : 'Add Task'}
               Customstyle={[
                 Styles.AddTaskBtn,
                 CheckChangedData()

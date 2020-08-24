@@ -1,18 +1,9 @@
 import React, {useEffect} from 'react';
-
 import {View, Image, Animated, Easing, Dimensions} from 'react-native';
-
 import Styles from './styles';
-
 import {Images} from '../../Assets';
-
 import AsyncStorage from '@react-native-community/async-storage';
-
 import {useSelector, useDispatch} from 'react-redux';
-
-import * as Auth from '../../Store/Actions/Auth';
-
-const {width} = Dimensions.get('screen');
 
 const Splash = (props) => {
   const dispatch = useDispatch();

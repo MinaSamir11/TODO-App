@@ -1,9 +1,6 @@
 import React from 'react';
-
 import {Text, View, StyleSheet, TouchableOpacity, Image} from 'react-native';
-
 import {Colors} from '../Assets';
-
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const EmptyState = (props) => {

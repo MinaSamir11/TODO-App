@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react';
-
 import {
   View,
   Text,
@@ -9,14 +8,13 @@ import {
   Easing,
   Dimensions,
 } from 'react-native';
-
 import {Colors} from '../../Assets';
-
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
 const {width} = Dimensions.get('screen');
 
 const Task = (props) => {
+  const {Data, OnEdit, OnCompleteTask, OnDeleteTask} = props;
+
   let opacity = new Animated.Value(0);
 
   const animate = (easing) => {
@@ -47,29 +45,30 @@ const Task = (props) => {
   return (
     <Animated.View style={animatedStyles}>
       <View style={styles.TitleContainer}>
-        <Text style={styles.titleTxt}>{props.Data['title']}</Text>
-        <TouchableOpacity onPress={() => props.OnEdit(props.Data)}>
+        <Text style={styles.titleTxt}>{Data['title']}</Text>
+        <TouchableOpacity onPress={() => OnEdit(Data)}>
           <Icon name={'pencil'} size={20} color={Colors.fontDark} />
         </TouchableOpacity>
       </View>
       <View style={{marginTop: 13, marginBottom: 20}}>
-        <Text style={styles.ContentTxt}>{props.Data['content']}</Text>
+        <Text style={styles.ContentTxt}>{Data['content']}</Text>
       </View>
       <View style={styles.CompleteDeleteContainer}>
-        <TouchableOpacity onPress={() => props.OnDeleteTask(props.Data)}>
+        <TouchableOpacity onPress={() => OnDeleteTask(Data)}>
           <Icon name={'delete'} size={20} color={'#540D47'} />
         </TouchableOpacity>
-        {props.Data['completed'] && <Text style={styles.DoneTxt}>Done</Text>}
-        <TouchableOpacity onPress={() => props.OnCompleteTask(props.Data)}>
+
+        {Data['completed'] && <Text style={styles.DoneTxt}>Done</Text>}
+        <TouchableOpacity onPress={() => OnCompleteTask(Data)}>
           <Icon
             name={
-              props.Data['completed']
+              Data['completed']
                 ? 'checkbox-marked-circle'
                 : 'checkbox-marked-circle-outline'
             }
             size={20}
             color={
-              props.Data['completed']
+              Data['completed']
                 ? Colors.MainColor
                 : Colors.SecondRelativeMainColor
             }

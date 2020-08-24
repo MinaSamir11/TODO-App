@@ -1,9 +1,6 @@
 import React from 'react';
-
 import {View, StyleSheet, Text, Image} from 'react-native';
-
 import {Colors} from '../Assets';
-
 import Modal, {
   ModalButton,
   ModalFooter,
