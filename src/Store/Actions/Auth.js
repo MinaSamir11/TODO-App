@@ -47,7 +47,6 @@ export const SignUpAuth = (Account) => {
           });
           dispatch(
             setUser({
-              ...RequestToken.data,
               userName: Account.username,
               Status: RequestToken.status,
             }),
@@ -131,7 +130,7 @@ export const SignInAuth = (Account) => {
       } else {
         dispatch(
           setUser({
-            Status: RequestToken.status,
+            Status: 408,
           }),
         );
       }
