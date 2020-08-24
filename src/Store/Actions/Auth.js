@@ -62,7 +62,7 @@ export const SignUpAuth = (Account) => {
       } else {
         dispatch(
           setUser({
-            Status: 408,
+            Status: RequestToken.status,
           }),
         );
       }
@@ -131,7 +131,7 @@ export const SignInAuth = (Account) => {
       } else {
         dispatch(
           setUser({
-            Status: 408,
+            Status: RequestToken.status,
           }),
         );
       }
