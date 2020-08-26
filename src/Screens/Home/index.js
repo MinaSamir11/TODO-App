@@ -1,23 +1,13 @@
 import React, {useState, useEffect, useCallback} from 'react';
-
 import {View, Text, FlatList, RefreshControl} from 'react-native';
-
 import Styles from './styles';
-
 import {Button, LoadingModal, PopUp, EmptyState} from '../../Components';
-
 import {Icons, Colors} from '../../Assets';
-
 import {useSelector, useDispatch} from 'react-redux';
-
 import * as TODOActions from '../../Store/Actions/TODO';
-
 import {useIsFocused} from '@react-navigation/native';
-
 import moment from 'moment';
-
 import Header from './Header';
-
 import Tasks from './RenderTasks';
 
 const Home = (props) => {
@@ -39,7 +29,7 @@ const Home = (props) => {
 
   let [MessagePopUp, setMessagePopUp] = useState('');
 
-  const [refreshing, setRefreshing] = React.useState(false);
+  let [refreshing, setRefreshing] = useState(false);
 
   const setToDoList = (ToDoStatus) => {
     return {
@@ -79,7 +69,6 @@ const Home = (props) => {
       } else if (StatusToDoResponse == 401) {
         IsLoadingModalVisible(false);
         setRefreshing(false);
-
         dispatch(setToDoList({Status: null}));
         RefreshToken();
       } else if (UserInfo.Status == 200) {
@@ -123,10 +112,14 @@ const Home = (props) => {
     );
   };
 
-  const OnEdit = (Task) => {
+  const OnEdiT = (EditTask) => {
     props.navigation.push('AddTask', {
-      Task,
+      EditTask,
     });
+  };
+
+  const OnDeleteTask = (Task) => {
+    dispatch(TODOActions.Delete_TODO(Task));
   };
 
   const OnCompleteTask = (Task) => {
@@ -140,14 +133,10 @@ const Home = (props) => {
     );
   };
 
-  const OnDeleteTask = (Task) => {
-    dispatch(TODOActions.Delete_TODO(Task['id'], Task['created']));
-  };
-
   return (
     <View style={Styles.MainContainer}>
       <Header
-        Date={`${moment().format('D MMMM, YYYY')} ${`\n`} ${moment().format(
+        date={`${moment().format('D MMMM, YYYY')} ${`\n`} ${moment().format(
           'dddd',
         )} ${'\n'}`}
         RightText={`${
@@ -185,6 +174,8 @@ const Home = (props) => {
 
         <View style={{flex: 1}}>
           {!LoadingModalVisible && isFocused && (
+            //why condition beacause while updating array animation doesn't work it hide items,
+            //so i tell list and the animation doesn't render until array be ready
             <FlatList
               data={TodayTODOlist}
               refreshControl={
@@ -203,7 +194,7 @@ const Home = (props) => {
                 <View style={{flex: 1}}>
                   <Tasks
                     Data={item}
-                    OnEdit={OnEdit}
+                    OnEdit={OnEdiT}
                     OnCompleteTask={OnCompleteTask}
                     OnDeleteTask={OnDeleteTask}
                     key={index}

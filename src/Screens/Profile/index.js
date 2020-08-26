@@ -1,15 +1,9 @@
 import React, {useState, useEffect, useCallback, useReducer} from 'react';
-
 import {View, ScrollView, Text} from 'react-native';
-
 import Styles from './styles';
-
 import {PopUp, Button} from '../../Components';
-
 import {Icons, Colors} from '../../Assets';
-
 import {useSelector} from 'react-redux';
-
 import AsyncStorage from '@react-native-community/async-storage';
 
 const UserProfile = (props) => {
@@ -26,16 +20,16 @@ const UserProfile = (props) => {
   let [CompletedTasks, setCompletedTasks] = useState();
 
   useEffect(() => {
-    let filtered = AllTodoList.filter(function (item, index, arr) {
+    let filtered = AllTodoList.filter(function (item) {
       return item['completed'] === true;
     });
+
     setCompletedTasks(filtered.length);
   }, [AllTodoList]);
 
   const Logout = async () => {
     try {
       await AsyncStorage.removeItem('com.dailymealz.userInfo');
-
       props.navigation.replace('AuthStack');
     } catch (e) {}
   };

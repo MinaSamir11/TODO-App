@@ -1,20 +1,11 @@
 import React, {useState, useReducer, useEffect, useCallback} from 'react';
-
 import {View, Text, ScrollView} from 'react-native';
-
 import Styles from './styles';
-
 import {Button, Input, LoadingModal, PopUp} from '../../../Components';
-
-import {Icons, Colors} from '../../../Assets';
-
+import {Colors} from '../../../Assets';
 import {validateUserName, validatePassword} from '../../../Utils/stringUtils';
-
 import {useSelector, useDispatch} from 'react-redux';
-
 import * as Auth from '../../../Store/Actions/Auth';
-
-import * as RootNavigation from '../../../Navigation/RootNavigation';
 
 const SignUp = (props) => {
   const dispatch = useDispatch();

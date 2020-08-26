@@ -1,15 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-} from 'react-native';
-
+import React from 'react';
+import {Text, View, StyleSheet, TouchableOpacity, Platform} from 'react-native';
 import {Colors} from '../Assets';
-
-const {height, width} = Dimensions.get('window');
 
 const Tabs = (props) => {
   const onPressTab = (event) => {

@@ -47,7 +47,6 @@ export const SignUpAuth = (Account) => {
           });
           dispatch(
             setUser({
-              ...RequestToken.data,
               userName: Account.username,
               Status: RequestToken.status,
             }),
@@ -62,7 +61,7 @@ export const SignUpAuth = (Account) => {
       } else {
         dispatch(
           setUser({
-            Status: 408,
+            Status: RequestToken.status,
           }),
         );
       }
@@ -184,12 +183,4 @@ export const Refresh = (Refresh) => {
       }
     }
   };
-};
-
-const removeValue = async () => {
-  try {
-    await AsyncStorage.removeItem('com.dailymealz.userInfo');
-  } catch (e) {
-    // remove error
-  }
 };

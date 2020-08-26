@@ -176,6 +176,7 @@ export const Update_TODO = (newTODOTask, OldTODOTask) => {
       } else if (UpdateTODORequest.status == 200) {
         let ToDoList = [...getState().TODO.ToDoList];
         let TodayTasks = [...getState().TODO.TodayTODOList];
+
         if (
           check_DateEquality([
             OldTODOTask['created'],
@@ -184,7 +185,6 @@ export const Update_TODO = (newTODOTask, OldTODOTask) => {
           OldTODOTask['completed'] !== UpdateTODORequest.data['completed']
         ) {
           // if user change conent only without date updated content in array Today
-
           let objIndex = TodayTasks.findIndex(
             (obj) => obj['id'] == UpdateTODORequest.data['id'],
           );
@@ -248,18 +248,18 @@ export const Update_TODO = (newTODOTask, OldTODOTask) => {
   };
 };
 
-export const Delete_TODO = (id, date) => {
+export const Delete_TODO = (mTask) => {
   return async (dispatch, getState) => {
     //need header Authorization in first param , "Relative url"
     let DeleteTODORequest = await Api.delete(
       true,
-      ApiConstant.Todo.concat(id + '/'),
+      ApiConstant.Todo.concat(mTask['id'] + '/'),
     );
 
     if (DeleteTODORequest) {
-      //error
       if (DeleteTODORequest.response) {
         // Request made and server responded
+        //error
         console.log(DeleteTODORequest.response.data);
         console.log(DeleteTODORequest.response.status);
         console.log(DeleteTODORequest.response.headers);
@@ -271,15 +271,15 @@ export const Delete_TODO = (id, date) => {
       } else if (DeleteTODORequest.status == 204) {
         let ToDoList = [...getState().TODO.ToDoList];
         let TodayTasks = [...getState().TODO.TodayTODOList];
-        if (check_TodaytaskDate(date)) {
+        if (check_TodaytaskDate(mTask['created'])) {
           // if user change today task to another day remove it from array today
-          let filtered = TodayTasks.filter(function (item, index, arr) {
-            return item['id'] !== id;
+          let filtered = TodayTasks.filter(function (item) {
+            return item['id'] !== mTask['id'];
           });
           TodayTasks = [...filtered];
         }
-        let filtToDoList = ToDoList.filter(function (item, index, arr) {
-          return item['id'] !== id;
+        let filtToDoList = ToDoList.filter(function (item) {
+          return item['id'] !== mTask['id'];
         });
         ToDoList = [...filtToDoList];
 
